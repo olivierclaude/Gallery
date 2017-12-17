@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(PermissionView)
 class PermissionView: UIView {
 
   lazy var imageView: UIImageView = self.makeImageView()

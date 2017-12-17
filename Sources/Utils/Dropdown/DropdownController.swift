@@ -5,6 +5,7 @@ protocol DropdownControllerDelegate: class {
   func dropdownController(_ controller: DropdownController, didSelect album: Album)
 }
 
+@objc(DropdownController)
 class DropdownController: UIViewController {
 
   lazy var tableView: UITableView = self.makeTableView()

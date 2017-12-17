@@ -4,6 +4,7 @@ protocol PageIndicatorDelegate: class {
   func pageIndicator(_ pageIndicator: PageIndicator, didSelect index: Int)
 }
 
+@objc(PageIndicator)
 class PageIndicator: UIView {
 
   let items: [String]

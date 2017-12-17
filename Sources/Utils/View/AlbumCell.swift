@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(AlbumCell)
 class AlbumCell: UITableViewCell {
 
   lazy var albumImageView: UIImageView = self.makeAlbumImageView()

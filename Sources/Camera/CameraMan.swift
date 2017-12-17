@@ -9,7 +9,9 @@ protocol CameraManDelegate: class {
   func cameraMan(_ cameraMan: CameraMan, didChangeInput input: AVCaptureDeviceInput)
 }
 
-class CameraMan {
+@objc(CameraMan)
+class CameraMan : NSObject {
+
   weak var delegate: CameraManDelegate?
 
   let session = AVCaptureSession()

@@ -1,6 +1,7 @@
 import Foundation
 
-class EventHub {
+@objc(EventHub)
+class EventHub : NSObject {
 
   typealias Action = () -> Void
 
@@ -8,7 +9,7 @@ class EventHub {
 
   // MARK: Initialization
 
-  init() {}
+  override init() {}
 
   var close: Action?
   var doneWithImages: Action?

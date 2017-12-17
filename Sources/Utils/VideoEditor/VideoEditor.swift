@@ -2,21 +2,22 @@ import Foundation
 import AVFoundation
 import Photos
 
-public class VideoEditor: VideoEditing {
+@objc(VideoEditor)
+public class VideoEditor: NSObject, VideoEditing {
 
   // MARK: - Initialization
 
-  public init() {
+  public override init() {
 
   }
 
   // MARK: - Edit
 
-  public func edit(video: Video, completion: @escaping (_ video: Video?, _ tempPath: URL?) -> Void) {
+  @objc open func edit(video: Video, completion: @escaping (_ video: Video?, _ tempPath: URL?) -> Void) {
     process(video: video, completion: completion)
   }
 
-  public func crop(avAsset: AVAsset, completion: @escaping (URL?) -> Void) {
+  @objc open func crop(avAsset: AVAsset, completion: @escaping (URL?) -> Void) {
     guard let outputURL = EditInfo.outputURL else {
       completion(nil)
       return

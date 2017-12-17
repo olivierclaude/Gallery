@@ -1,14 +1,15 @@
 import UIKit
 import Photos
 
-class VideosLibrary {
+@objc(VideosLibrary)
+class VideosLibrary : NSObject {
 
-  var items: [Video] = []
-  var fetchResults: PHFetchResult<PHAsset>?
+  @objc open var items: [Video] = []
+  @objc open var fetchResults: PHFetchResult<PHAsset>?
 
   // MARK: - Initialization
 
-  init() {
+  override init() {
 
   }
 

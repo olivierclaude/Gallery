@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(EmptyView)
 class EmptyView: UIView {
 
   lazy var imageView: UIImageView = self.makeImageView()

@@ -1,14 +1,16 @@
 import UIKit
 import Photos
 
-class ImagesLibrary {
+@objc(ImagesLibrary)
+class ImagesLibrary : NSObject {
+
 
   var albums: [Album] = []
   var albumsFetchResults = [PHFetchResult<PHAssetCollection>]()
 
   // MARK: - Initialization
 
-  init() {
+  override init() {
 
   }
 

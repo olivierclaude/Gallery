@@ -2,6 +2,7 @@ import UIKit
 import Photos
 import AVKit
 
+@objc(VideosController)
 class VideosController: UIViewController {
 
   lazy var gridView: GridView = self.makeGridView()
@@ -166,7 +167,7 @@ extension VideosController: UICollectionViewDataSource, UICollectionViewDelegate
       as! VideoCell
     let item = items[(indexPath as NSIndexPath).item]
 
-    cell.configure(item)
+    cell.configureVideo(item)
     cell.frameView.label.isHidden = true
     configureFrameView(cell, indexPath: indexPath)
 

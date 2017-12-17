@@ -1,6 +1,7 @@
 import UIKit
 import Photos
 
+@objc(ImagesController)
 class ImagesController: UIViewController {
 
   lazy var dropdownController: DropdownController = self.makeDropdownController()
@@ -203,7 +204,7 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
       as! ImageCell
     let item = items[(indexPath as NSIndexPath).item]
 
-    cell.configure(item)
+    cell.configureImage(item)
     configureFrameView(cell, indexPath: indexPath)
 
     return cell
@@ -221,14 +222,21 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let item = items[(indexPath as NSIndexPath).item]
 
-    if cart.images.contains(item) {
-      cart.remove(item)
-    } else {
-      if Config.Camera.imageLimit == 0 || Config.Camera.imageLimit > cart.images.count{
+    if cart.imagesLimit == 1
+    {
         cart.add(item)
+        EventHub.shared.doneWithImages?()
+    }
+    else
+    {
+      if cart.images.contains(item) {
+        cart.remove(item)
+      } else {
+        if cart.imagesLimit == 0 || cart.imagesLimit > cart.images.count{
+          cart.add(item)
+        }
       }
     }
-
     configureFrameViews()
   }
 

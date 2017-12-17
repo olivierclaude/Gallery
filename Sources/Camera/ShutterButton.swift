@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(ShutterButton)
 class ShutterButton: UIButton {
 
   lazy var overlayView: UIView = self.makeOverlayView()

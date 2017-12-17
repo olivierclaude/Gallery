@@ -4,6 +4,7 @@ protocol PageAware: class {
   func pageDidShow()
 }
 
+@objc(PagesController)
 class PagesController: UIViewController {
 
   let controllers: [UIViewController]

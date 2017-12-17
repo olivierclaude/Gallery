@@ -1,6 +1,7 @@
 import Foundation
 import CoreLocation
 
+@objc(LocationManager)
 class LocationManager: NSObject, CLLocationManagerDelegate {
   var locationManager = CLLocationManager()
   var latestLocation: CLLocation?

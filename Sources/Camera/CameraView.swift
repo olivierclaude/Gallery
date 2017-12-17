@@ -1,11 +1,21 @@
 import UIKit
 import AVFoundation
+import PhotoEditorSDK
+import GLKit
+
 
 protocol CameraViewDelegate: class {
   func cameraView(_ cameraView: CameraView, didTouch point: CGPoint)
 }
 
+@objc(CameraView)
 class CameraView: UIView, UIGestureRecognizerDelegate {
+
+  struct GestureConstants {
+    static let maximumHeight: CGFloat = 125
+    static let minimumHeight: CGFloat = 125
+    static let velocity: CGFloat = 100
+  }
 
   lazy var closeButton: UIButton = self.makeCloseButton()
   lazy var flashButton: TripleButton = self.makeFlashButton()
@@ -21,9 +31,32 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   lazy var shutterOverlayView: UIView = self.makeShutterOverlayView()
   lazy var blurView: UIVisualEffectView = self.makeBlurView()
 
+  open lazy var galleryView: FilterGalleryView = { [unowned self] in
+    let galleryView = FilterGalleryView()
+    galleryView.delegate = self
+        
+    galleryView.filterSelection.collectionView.layer.anchorPoint = CGPoint(x: 0, y: 0)
+        
+    return galleryView
+  }()
+    
+  lazy var panGestureRecognizer: UIPanGestureRecognizer = { [unowned self] in
+    let gesture = UIPanGestureRecognizer()
+    gesture.addTarget(self, action: #selector(panGestureRecognizerHandler(_:)))
+        
+    return gesture
+  }()
+
   var timer: Timer?
-  var previewLayer: AVCaptureVideoPreviewLayer?
+  //var previewLayer: AVCaptureVideoPreviewLayer?
+  weak var camera: CameraController?;
+  weak var previewLayer: GLKView?
+  
   weak var delegate: CameraViewDelegate?
+  var totalSize: CGSize { return UIScreen.main.bounds.size }
+  var initialFrame: CGRect?
+  var initialContentOffset: CGPoint?
+  var numberOfCells: Int?
 
   // MARK: - Initialization
 
@@ -37,13 +70,13 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
+    
   // MARK: - Setup
 
   func setup() {
-    addGestureRecognizer(tapGR)
+    //addGestureRecognizer(tapGR)
 
-    [closeButton, flashButton, rotateButton, bottomContainer].forEach {
+    [closeButton, flashButton, rotateButton, galleryView, bottomContainer].forEach {
       addSubview($0)
     }
 
@@ -103,20 +136,43 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     rotateOverlayView.g_pinEdges()
     blurView.g_pinEdges()
     shutterOverlayView.g_pinEdges()
+    
+    let galleryHeight: CGFloat = UIScreen.main.nativeBounds.height == 960
+        ? FilterGalleryView.Dimensions.filterBarHeight : GestureConstants.minimumHeight
+    
+    let bottomContainerHeight: CGFloat = 120
+    
+    galleryView.frame = CGRect(x: 0,
+                               y: totalSize.height - bottomContainerHeight - galleryHeight,
+                               width: totalSize.width,
+                               height: galleryHeight)
+    
+    galleryView.filterSelection.collectionView.transform = CGAffineTransform.identity
+    galleryView.filterSelection.collectionView.contentInset = UIEdgeInsets.zero
+    
+    galleryView.updateFrames()
+    
+    galleryView.filterSelection.selectedBlock = { [unowned self] photoEffect in
+        self.camera?.photoEffect = photoEffect
+    }
+    
+    initialFrame = galleryView.frame
+    initialContentOffset = galleryView.filterSelection.collectionView.contentOffset
   }
 
-  func setupPreviewLayer(_ session: AVCaptureSession) {
+  func setupPreviewLayer(_ session: CameraController) {
     guard previewLayer == nil else { return }
-
-    let layer = AVCaptureVideoPreviewLayer(session: session)
-    layer.autoreverses = true
-    layer.videoGravity = .resizeAspectFill
-
-    self.layer.insertSublayer(layer, at: 0)
-    layer.frame = self.layer.bounds
-
-    previewLayer = layer
+        
+    camera = session
+    previewLayer = session.videoPreviewView
+        
+    let layer = previewLayer?.layer
+    layer?.autoreverses = true
+    layer?.frame = self.layer.bounds
+        
+    self.layer.insertSublayer(layer!, at: 0)
   }
+
 
   override func layoutSubviews() {
     super.layoutSubviews()
@@ -199,7 +255,7 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   func makeBottomView() -> UIView {
     let view = UIView()
     view.backgroundColor = Config.Camera.BottomContainer.backgroundColor
-    view.alpha = 0
+    view.alpha = 1
 
     return view
   }
@@ -223,6 +279,8 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     button.setTitleColor(UIColor.lightGray, for: .disabled)
     button.titleLabel?.font = Config.Font.Text.regular.withSize(16)
     button.setTitle("Gallery.Done".g_localize(fallback: "Done"), for: UIControlState())
+
+    button.isHidden = false
 
     return button
   }
@@ -266,4 +324,107 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     return blurView
   }
 
+    // MARK: - Helpers
+    
+    open func collapseGalleryView(_ completion: (() -> Void)?) {
+        galleryView.filterSelection.collectionView.collectionViewLayout.invalidateLayout()
+        UIView.animate(withDuration: 0.3, animations: {
+            self.updateGalleryViewFrames(self.galleryView.topSeparator.frame.height)
+            self.galleryView.filterSelection.collectionView.transform = CGAffineTransform.identity
+            self.galleryView.filterSelection.collectionView.contentInset = UIEdgeInsets.zero
+        }, completion: { _ in
+            completion?()
+        })
+    }
+    
+    open func showGalleryView() {
+        galleryView.filterSelection.collectionView.collectionViewLayout.invalidateLayout()
+        UIView.animate(withDuration: 0.3, animations: {
+            self.updateGalleryViewFrames(GestureConstants.minimumHeight)
+            self.galleryView.filterSelection.collectionView.transform = CGAffineTransform.identity
+            self.galleryView.filterSelection.collectionView.contentInset = UIEdgeInsets.zero
+        })
+    }
+    
+    open func expandGalleryView() {
+        galleryView.filterSelection.collectionView.collectionViewLayout.invalidateLayout()
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.updateGalleryViewFrames(GestureConstants.minimumHeight)
+            
+            let scale = (GestureConstants.maximumHeight - FilterGalleryView.Dimensions.filterBarHeight) / (GestureConstants.minimumHeight - FilterGalleryView.Dimensions.filterBarHeight)
+            self.galleryView.filterSelection.collectionView.transform = CGAffineTransform(scaleX: scale, y: scale)
+            
+            let value = self.frame.width * (scale - 1) / scale
+            self.galleryView.filterSelection.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right:  value)
+        })
+    }
+    
+    func updateGalleryViewFrames(_ constant: CGFloat) {
+        let bottomContainerHeight: CGFloat = 120
+        
+        galleryView.frame.origin.y = totalSize.height - bottomContainerHeight - constant
+        galleryView.frame.size.height = constant
+    }
+}
+
+// MARK: - Pan gesture handler
+
+extension CameraView: FilterGalleryPanGestureDelegate {
+    
+    func panGestureDidStart() {
+        guard let collectionSize = galleryView.collectionSize else { return }
+        
+        initialFrame = galleryView.frame
+        initialContentOffset = galleryView.filterSelection.collectionView.contentOffset
+        if let contentOffset = initialContentOffset { numberOfCells = Int(contentOffset.x / collectionSize.width) }
+    }
+    
+    @objc func panGestureRecognizerHandler(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        let velocity = gesture.velocity(in: self)
+        
+        if gesture.location(in: self).y > galleryView.frame.origin.y - 25 {
+            gesture.state == .began ? panGestureDidStart() : panGestureDidChange(translation)
+        }
+        
+        if gesture.state == .ended {
+            panGestureDidEnd(translation, velocity: velocity)
+        }
+    }
+    
+    func panGestureDidChange(_ translation: CGPoint) {
+        guard let initialFrame = initialFrame else { return }
+        
+        let galleryHeight = initialFrame.height - translation.y
+        
+        if galleryHeight >= GestureConstants.maximumHeight { return }
+        
+        if galleryHeight <= FilterGalleryView.Dimensions.filterBarHeight {
+            updateGalleryViewFrames(FilterGalleryView.Dimensions.filterBarHeight)
+        } else if galleryHeight >= GestureConstants.minimumHeight {
+            let scale = (galleryHeight - FilterGalleryView.Dimensions.filterBarHeight) / (GestureConstants.minimumHeight - FilterGalleryView.Dimensions.filterBarHeight)
+            galleryView.filterSelection.collectionView.transform = CGAffineTransform(scaleX: scale, y: scale)
+            galleryView.frame.origin.y = initialFrame.origin.y + translation.y
+            galleryView.frame.size.height = initialFrame.height - translation.y
+            
+            let value = frame.width * (scale - 1) / scale
+            galleryView.filterSelection.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right:  value)
+        } else {
+            galleryView.frame.origin.y = initialFrame.origin.y + translation.y
+            galleryView.frame.size.height = initialFrame.height - translation.y
+        }
+    }
+    
+    func panGestureDidEnd(_ translation: CGPoint, velocity: CGPoint) {
+        guard let initialFrame = initialFrame else { return }
+        let galleryHeight = initialFrame.height - translation.y
+        if galleryView.frame.height < GestureConstants.minimumHeight && velocity.y < 0 {
+            showGalleryView()
+        } else if velocity.y < -GestureConstants.velocity {
+            expandGalleryView()
+        } else if velocity.y > GestureConstants.velocity || galleryHeight < GestureConstants.minimumHeight {
+            collapseGalleryView(nil)
+        }
+    }
 }

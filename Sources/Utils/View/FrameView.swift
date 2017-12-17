@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(FrameView)
 class FrameView: UIView {
 
   lazy var label: UILabel = self.makeLabel()

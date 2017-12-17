@@ -8,15 +8,19 @@ public protocol CartDelegate: class {
 }
 
 /// Cart holds selected images and videos information
-public class Cart {
-
-  public var images: [Image] = []
-  public var video: Video?
-  var delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
-
+@objc(Cart)
+public class Cart : NSObject {
+    
+  @objc open var imagesLimit: Int = 0
+  @objc open var images: [Image] = []
+  @objc open var video: Video?
+    
+  @objc open var delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
+    
   // MARK: - Initialization
+    
+  override init() {
 
-  init() {
 
   }
 

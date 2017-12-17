@@ -1,6 +1,7 @@
 import UIKit
 import AVFoundation
 
+@objc(GalleryControllerDelegate)
 public protocol GalleryControllerDelegate: class {
 
   func galleryController(_ controller: GalleryController, didSelectImages images: [Image])
@@ -9,11 +10,12 @@ public protocol GalleryControllerDelegate: class {
   func galleryControllerDidCancel(_ controller: GalleryController)
 }
 
+@objc(GalleryController)
 public class GalleryController: UIViewController, PermissionControllerDelegate {
 
-  public weak var delegate: GalleryControllerDelegate?
+  @objc open weak var delegate: GalleryControllerDelegate?
 
-  public let cart = Cart()
+  @objc open let cart = Cart()
 
   // MARK: - Init
 
@@ -53,8 +55,8 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
     return controller
   }
 
-  func makeCameraController() -> CameraController {
-    let controller = CameraController(cart: cart)
+  func makeCameraController() -> NewCameraController {
+    let controller = NewCameraController(cart: cart)
     controller.title = "Gallery.Camera.Title".g_localize(fallback: "CAMERA")
 
     return controller

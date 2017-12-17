@@ -1,6 +1,7 @@
 import UIKit
 import Photos
 
+@objc(ImageCell)
 class ImageCell: UICollectionViewCell {
 
   lazy var imageView: UIImageView = self.makeImageView()
@@ -34,7 +35,7 @@ class ImageCell: UICollectionViewCell {
     imageView.g_loadImage(asset)
   }
 
-  func configure(_ image: Image) {
+  func configureImage(_ image: Image) {
     configure(image.asset)
   }
 

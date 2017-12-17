@@ -1,6 +1,7 @@
 import UIKit
 import Photos
 
+@objc(GridView)
 class GridView: UIView {
 
   // MARK: - Initialization
@@ -63,7 +64,7 @@ class GridView: UIView {
     }
 
     bottomView.g_pinDownward()
-    bottomView.g_pin(height: 80)
+    bottomView.g_pin(height: 60)
 
     emptyView.g_pinEdges(view: collectionView)
     

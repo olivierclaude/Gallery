@@ -1,6 +1,7 @@
 import Foundation
 
-class Once {
+@objc(Once)
+class Once : NSObject {
 
   var already: Bool = false
 

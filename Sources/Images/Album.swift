@@ -1,10 +1,12 @@
 import UIKit
 import Photos
 
-class Album {
+@objc(Album)
+class Album : NSObject {
+    
+  @objc open let collection: PHAssetCollection
+  @objc open var items: [Image] = []
 
-  let collection: PHAssetCollection
-  var items: [Image] = []
 
   // MARK: - Initialization
 

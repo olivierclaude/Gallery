@@ -1,6 +1,7 @@
 import UIKit
 import Photos
 
+@objc(VideoCell)
 class VideoCell: ImageCell {
 
   lazy var cameraImageView: UIImageView = self.makeCameraImageView()
@@ -9,7 +10,7 @@ class VideoCell: ImageCell {
 
   // MARK: - Config
 
-  func configure(_ video: Video) {
+  func configureVideo(_ video: Video) {
     super.configure(video.asset)
 
     video.fetchDuration { duration in

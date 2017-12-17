@@ -4,6 +4,7 @@ protocol VideoBoxDelegate: class {
   func videoBoxDidTap(_ videoBox: VideoBox)
 }
 
+@objc(VideoBox)
 class VideoBox: UIView {
 
   lazy var imageView: UIImageView = self.makeImageView()

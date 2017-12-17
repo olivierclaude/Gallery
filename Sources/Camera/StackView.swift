@@ -1,6 +1,7 @@
 import UIKit
 import Photos
 
+@objc(StackView)
 class StackView: UIControl{
 
   lazy var indicator: UIActivityIndicatorView = self.makeIndicator()

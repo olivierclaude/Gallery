@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(ArrowButton)
 class ArrowButton: UIButton {
 
   lazy var label: UILabel = self.makeLabel()

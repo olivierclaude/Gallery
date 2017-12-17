@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(TripleButton)
 class TripleButton: UIButton {
 
   struct State {

@@ -2,9 +2,10 @@ import UIKit
 import Photos
 
 /// Wrap a PHAsset for video
-public class Video: Equatable {
-
-  public let asset: PHAsset
+@objc(Video)
+public class Video: NSObject {
+    
+  @objc open let asset: PHAsset
 
   var durationRequestID: Int = 0
   var duration: Double = 0
@@ -18,7 +19,7 @@ public class Video: Equatable {
   /// Fetch video duration asynchronously
   ///
   /// - Parameter completion: Called when finish
-  func fetchDuration(_ completion: @escaping (Double) -> Void) {
+  @objc open func fetchDuration(_ completion: @escaping (Double) -> Void) {
     guard duration == 0
     else {
       DispatchQueue.main.async {
@@ -46,7 +47,7 @@ public class Video: Equatable {
   /// Fetch AVPlayerItem asynchronoulys
   ///
   /// - Parameter completion: Called when finish
-  public func fetchPlayerItem(_ completion: @escaping (AVPlayerItem?) -> Void) {
+  @objc open func fetchPlayerItem(_ completion: @escaping (AVPlayerItem?) -> Void) {
     PHImageManager.default().requestPlayerItem(forVideo: asset, options: videoOptions) {
       item, _ in
 
@@ -59,7 +60,7 @@ public class Video: Equatable {
   /// Fetch AVAsset asynchronoulys
   ///
   /// - Parameter completion: Called when finish
-  public func fetchAVAsset(_ completion: @escaping (AVAsset?) -> Void) {
+  @objc open func fetchAVAsset(_ completion: @escaping (AVAsset?) -> Void) {
     PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { avAsset, _, _ in
       DispatchQueue.main.async {
         completion(avAsset)
@@ -71,7 +72,7 @@ public class Video: Equatable {
   ///
   /// - Parameter size: The preferred size
   /// - Parameter completion: Called when finish
-  public func fetchThumbnail(size: CGSize = CGSize(width: 100, height: 100), completion: @escaping (UIImage?) -> Void) {
+  @objc open func fetchThumbnail(size: CGSize = CGSize(width: 100, height: 100), completion: @escaping (UIImage?) -> Void) {
     let options = PHImageRequestOptions()
     options.isNetworkAccessAllowed = true
 

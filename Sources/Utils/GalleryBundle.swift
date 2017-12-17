@@ -1,6 +1,7 @@
 import UIKit
 
-class GalleryBundle {
+@objc(GalleryBundle)
+class GalleryBundle : NSObject {
 
   static func image(_ named: String) -> UIImage? {
     let bundle = Foundation.Bundle(for: GalleryBundle.self)

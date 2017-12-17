@@ -4,6 +4,7 @@ protocol PermissionControllerDelegate: class {
   func permissionControllerDidFinish(_ controller: PermissionController)
 }
 
+@objc(PermissionController)
 class PermissionController: UIViewController {
 
   lazy var permissionView: PermissionView = self.makePermissionView()
