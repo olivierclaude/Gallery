@@ -66,6 +66,9 @@ public class Config : NSObject {
   public class Camera : NSObject {
 
     @objc public static var recordLocation: Bool = false
+    
+    @objc public static var allowVolumeButtonsToTakePicture: Bool = true
+
 
     @objc(ConfigShutterButton)
     public class ShutterButton : NSObject {

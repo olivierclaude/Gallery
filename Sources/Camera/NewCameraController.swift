@@ -3,6 +3,7 @@ import AVFoundation
 import PhotoEditorSDK
 import PhotosUI
 import Photos
+import MediaPlayer
 
 @objc(NewCameraController)
 class NewCameraController: UIViewController {
@@ -14,6 +15,14 @@ class NewCameraController: UIViewController {
     let cart: Cart
     let savingQueue = DispatchQueue(label: "no.hyper.Gallery.Camera.SavingQueue", qos: .background)
     
+    lazy var volumeView: MPVolumeView = { [unowned self] in
+        let view = MPVolumeView()
+        view.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+        
+        return view
+        }()
+    
+    var volume = AVAudioSession.sharedInstance().outputVolume
     
     // MARK: - Init
     
@@ -40,12 +49,14 @@ class NewCameraController: UIViewController {
         super.viewWillAppear(animated)
         
         locationManager?.start()
+        cameraMan.startCamera()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         locationManager?.stop()
+        cameraMan.stopCamera()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -63,6 +74,9 @@ class NewCameraController: UIViewController {
     
     func setup() {
         view.addSubview(cameraView)
+        view.addSubview(volumeView)
+        view.sendSubview(toBack: volumeView)
+        
         cameraView.g_pinEdges()
         
         cameraView.closeButton.addTarget(self, action: #selector(closeButtonTouched(_:)), for: .touchUpInside)
@@ -71,12 +85,27 @@ class NewCameraController: UIViewController {
         cameraView.stackView.addTarget(self, action: #selector(stackViewTouched(_:)), for: .touchUpInside)
         cameraView.shutterButton.addTarget(self, action: #selector(shutterButtonTouched(_:)), for: .touchUpInside)
         cameraView.doneButton.addTarget(self, action: #selector(doneButtonTouched(_:)), for: .touchUpInside)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(volumeChanged(_:)),
+                                               name: NSNotification.Name(rawValue: "AVSystemController_SystemVolumeDidChangeNotification"),
+                                               object: nil)
     }
     
     func setupLocation() {
         if Config.Camera.recordLocation {
             locationManager = LocationManager()
         }
+    }
+    
+    @objc func volumeChanged(_ notification: Notification) {
+        guard Config.Camera.allowVolumeButtonsToTakePicture,
+            let slider = volumeView.subviews.filter({ $0 is UISlider }).first as? UISlider,
+            let userInfo = (notification as NSNotification).userInfo,
+            let changeReason = userInfo["AVSystemController_AudioVolumeChangeReasonNotificationParameter"] as? String, changeReason == "ExplicitVolumeChange" else { return }
+        
+        slider.setValue(volume, animated: false)
+        takePicture()
     }
     
     // MARK: - Action
@@ -122,6 +151,12 @@ class NewCameraController: UIViewController {
             })
         })
         
+        takePicture()
+        
+        button.isEnabled = true
+    }
+    
+    func takePicture() {
         if cart.imagesLimit == 1
         {
             cameraMan.takePhoto() { [weak self] (image, error) in
@@ -148,8 +183,6 @@ class NewCameraController: UIViewController {
                 guard let strongSelf = self else {
                     return
                 }
-                
-                button.isEnabled = true
                 
                 strongSelf.savePhoto(image, location: strongSelf.locationManager?.latestLocation) { [weak self] asset in
                     guard let strongSelf = self else {
@@ -261,6 +294,8 @@ extension NewCameraController: PageAware {
             }
         }
     }
+    
+    
 }
 
 
