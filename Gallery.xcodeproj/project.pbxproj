@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0938B60B201A0EE20069F858 /* PhotoEditorSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0938B60A201A0EE10069F858 /* PhotoEditorSDK.framework */; };
 		0968BDB31FE590C7002721A1 /* FilterGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968BDB21FE590C7002721A1 /* FilterGalleryView.swift */; };
 		0968BDB51FE5A5BA002721A1 /* SwiftyCamButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968BDB41FE5A5BA002721A1 /* SwiftyCamButton.swift */; };
 		0968BDB71FE5A5DE002721A1 /* NewCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968BDB61FE5A5DE002721A1 /* NewCameraController.swift */; };
-		0968BDBB1FE5A95A002721A1 /* PhotoEditorSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0968BDBA1FE5A95A002721A1 /* PhotoEditorSDK.framework */; };
 		D24CF7321E93D1FB002E6484 /* Gallery.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D24CF7311E93D1FB002E6484 /* Gallery.bundle */; };
 		D27B72ED1D6EEEC80093318F /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B72EC1D6EEEC80093318F /* Tests.swift */; };
 		D2D1A6CA1F84F4DB0083D4C5 /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D1A6901F84F4DB0083D4C5 /* Album.swift */; };
@@ -74,10 +74,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0938B60A201A0EE10069F858 /* PhotoEditorSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PhotoEditorSDK.framework; sourceTree = "<group>"; };
 		0968BDB21FE590C7002721A1 /* FilterGalleryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterGalleryView.swift; sourceTree = "<group>"; };
 		0968BDB41FE5A5BA002721A1 /* SwiftyCamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamButton.swift; sourceTree = "<group>"; };
 		0968BDB61FE5A5DE002721A1 /* NewCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCameraController.swift; sourceTree = "<group>"; };
-		0968BDBA1FE5A95A002721A1 /* PhotoEditorSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PhotoEditorSDK.framework; sourceTree = "<group>"; };
 		D24CF7311E93D1FB002E6484 /* Gallery.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Gallery.bundle; sourceTree = "<group>"; };
 		D27B72EC1D6EEEC80093318F /* Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		D27B730C1D6EF04D0093318F /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
@@ -141,7 +141,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0968BDBB1FE5A95A002721A1 /* PhotoEditorSDK.framework in Frameworks */,
+				0938B60B201A0EE20069F858 /* PhotoEditorSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,7 +175,7 @@
 		D27B730E1D6EF0640093318F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0968BDBA1FE5A95A002721A1 /* PhotoEditorSDK.framework */,
+				0938B60A201A0EE10069F858 /* PhotoEditorSDK.framework */,
 				D27B730C1D6EF04D0093318F /* Cartography.framework */,
 			);
 			name = Frameworks;
