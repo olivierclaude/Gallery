@@ -8,7 +8,7 @@ import MediaPlayer
 @objc(NewCameraController)
 class NewCameraController: UIViewController {
     
-    var locationManager: LocationManager?
+    //var locationManager: LocationManager?
     lazy var cameraMan: CameraController = self.makeCameraMan()
     lazy var cameraView: CameraView = self.makeCameraView()
     let once = Once()
@@ -42,20 +42,20 @@ class NewCameraController: UIViewController {
         super.viewDidLoad()
         
         setup()
-        setupLocation()
+        //setupLocation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        locationManager?.start()
+        //locationManager?.start()
         cameraMan.startCamera()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        locationManager?.stop()
+        //locationManager?.stop()
         cameraMan.stopCamera()
     }
     
@@ -92,11 +92,11 @@ class NewCameraController: UIViewController {
                                                object: nil)
     }
     
-    func setupLocation() {
-        if Config.Camera.recordLocation {
-            locationManager = LocationManager()
-        }
-    }
+    //func setupLocation() {
+    //    if Config.Camera.recordLocation {
+    //        locationManager = LocationManager()
+    //    }
+    //}
     
     @objc func volumeChanged(_ notification: Notification) {
         guard Config.Camera.allowVolumeButtonsToTakePicture,
@@ -163,8 +163,8 @@ class NewCameraController: UIViewController {
                 guard let strongSelf = self else {
                     return
                 }
-                
-                strongSelf.savePhoto(image, location: strongSelf.locationManager?.latestLocation) { [weak self] asset in
+                //location: strongSelf.locationManager?.latestLocation
+                strongSelf.savePhoto(image, location:nil) { [weak self] asset in
                     guard self != nil else {
                         return
                     }
@@ -183,8 +183,8 @@ class NewCameraController: UIViewController {
                 guard let strongSelf = self else {
                     return
                 }
-                
-                strongSelf.savePhoto(image, location: strongSelf.locationManager?.latestLocation) { [weak self] asset in
+                //location: strongSelf.locationManager?.latestLocation
+                strongSelf.savePhoto(image, location:nil) { [weak self] asset in
                     guard let strongSelf = self else {
                         return
                     }
@@ -209,7 +209,10 @@ class NewCameraController: UIViewController {
                     localIdentifier = request.placeholderForCreatedAsset?.localIdentifier
                     
                     request.creationDate = Date()
-                    request.location = location
+                    if(location != nil)
+                    {
+                        request.location = location
+                    }
                 }
                 
                 DispatchQueue.main.async {
@@ -294,7 +297,6 @@ extension NewCameraController: PageAware {
             }
         }
     }
-    
     
 }
 

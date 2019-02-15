@@ -35,10 +35,17 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
     setup()
 
     if let pagesController = makePagesController() {
-      g_addChildController(pagesController)
+        if Permission.Camera.status != .authorized && !Config.showsVideoTab {
+            let permissionController = makePermissionController()
+            g_addChildController(permissionController)
+        }
+        else
+        {
+            g_addChildController(pagesController)
+        }
     } else {
-      let permissionController = makePermissionController()
-      g_addChildController(permissionController)
+        let permissionController = makePermissionController()
+        g_addChildController(permissionController)
     }
   }
 
@@ -55,8 +62,8 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
     return controller
   }
 
-  func makeCameraController() -> NewCameraController {
-    let controller = NewCameraController(cart: cart)
+  func makeCameraController() -> CameraController {
+    let controller = CameraController(cart: cart)
     controller.title = "Gallery.Camera.Title".g_localize(fallback: "CAMERA")
 
     return controller
@@ -70,9 +77,9 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
   }
 
   func makePagesController() -> PagesController? {
-    guard Permission.Photos.status == .authorized else {
-      return nil
-    }
+    //guard Permission.Photos.status == .authorized else {
+    //  return nil
+    //}
 
     let useCamera = Permission.Camera.needsPermission && Permission.Camera.status == .authorized
 
